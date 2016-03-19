@@ -3,16 +3,17 @@ require 'test_helper'
 class PostsControllerTest < ActionController::TestCase
   setup do
     @post = posts(:one)
+    @controller = API::PostsController.new
   end
 
   test "should get index" do
-    get :index
+    get :index, format: :json
     assert_response :success
     assert_not_nil assigns(:posts)
   end
 
   test "should get new" do
-    get :new
+    get :new, format: :json
     assert_response :success
   end
 
@@ -21,22 +22,22 @@ class PostsControllerTest < ActionController::TestCase
       post :create, post: { categories: @post.categories, content: @post.content, title: @post.title }
     end
 
-    assert_redirected_to post_path(assigns(:post))
+    assert_response :success
   end
 
   test "should show post" do
-    get :show, id: @post
+    get :show, id: @post, format: :json
     assert_response :success
   end
 
   test "should get edit" do
-    get :edit, id: @post
+    get :edit, id: @post, format: :json
     assert_response :success
   end
 
   test "should update post" do
     patch :update, id: @post, post: { categories: @post.categories, content: @post.content, title: @post.title }
-    assert_redirected_to post_path(assigns(:post))
+    assert_response :success
   end
 
   test "should destroy post" do
@@ -44,6 +45,6 @@ class PostsControllerTest < ActionController::TestCase
       delete :destroy, id: @post
     end
 
-    assert_redirected_to posts_path
+    assert_response :success
   end
 end

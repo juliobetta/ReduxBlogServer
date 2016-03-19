@@ -1,5 +1,5 @@
 class API::PostsController < ApplicationController
-  before_action :set_post, only: [:show, :edit, :destroy]
+  before_action :set_post, only: [:show, :edit, :destroy, :update]
 
   def index
     @posts = Post.where(key: post_params[:key]).last(10).reverse
@@ -18,12 +18,22 @@ class API::PostsController < ApplicationController
     end
   end
 
+  def update
+    if @post.update_attributes post_params
+      render :show, status: :ok
+    else
+      render json: @post.errors, status: :unprocessable_entity
+    end
+  end
+
   def destroy
     @post.destroy
     render :show, status: :ok
   end
 
+
   private
+
   def set_post
     @post = Post.find(params[:id])
   end

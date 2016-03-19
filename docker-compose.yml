@@ -1,0 +1,9 @@
+app:
+  build: .
+  volumes:
+    - .:/app
+  ports:
+    - '3000:3000'
+  environment:
+    RAILS_ENV: development
+    RACK_ENV: development
