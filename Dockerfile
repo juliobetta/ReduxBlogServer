@@ -1,4 +1,4 @@
-FROM ruby:2.2.1
+FROM ruby:2.2.3
 MAINTAINER marko@codeship.com
 
 # Add 'web' user which will run the application.

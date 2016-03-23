@@ -1,4 +1,5 @@
 app:
+  container_name: reduxblogserver_web
   build: .
   volumes:
     - .:/app

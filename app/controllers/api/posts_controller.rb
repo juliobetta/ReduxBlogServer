@@ -1,12 +1,15 @@
 class API::PostsController < ApplicationController
   before_action :set_post, only: [:show, :edit, :destroy, :update]
+  before_action :authenticate_user_from_token!
 
   def index
-    @posts = Post.where(key: post_params[:key]).last(10).reverse
+    @posts = Post.last(10).reverse
   end
+
 
   def show
   end
+
 
   def create
     @post = Post.new(post_params)
@@ -18,6 +21,7 @@ class API::PostsController < ApplicationController
     end
   end
 
+
   def update
     if @post.update_attributes post_params
       render :show, status: :ok
@@ -26,19 +30,21 @@ class API::PostsController < ApplicationController
     end
   end
 
+
   def destroy
     @post.destroy
     render :show, status: :ok
   end
 
 
+
   private
 
   def set_post
-    @post = Post.find(params[:id])
+    @post = Post.where(id: params[:id], user: current_user)[0]
   end
 
   def post_params
-    params.permit(:title, :categories, :content, :key)
+    params.permit(:title, :categories, :content, :key).merge(user: current_user
   end
 end

@@ -13,3 +13,8 @@ rails s
 ```
 
 And away you go!
+
+
+### Notes
+
+[JWT + Devise](https://anantasite.wordpress.com/2015/09/28/jwt-integration-with-devise-rails-and-angularjs/)

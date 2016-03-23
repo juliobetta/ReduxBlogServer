@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.2.1'
+ruby '2.2.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.3'
@@ -17,6 +17,9 @@ group :production do
   gem 'dalli'
 end
 
+
+gem 'devise'
+gem 'jwt'
 gem 'sass-rails', '~> 5.0.3'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.0.0'
