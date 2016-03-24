@@ -1,4 +1,4 @@
-DOCKER_IMAGE_NAME = railsblogserver_web
+DOCKER_IMAGE_NAME = reduxblogserver_web
 
 ifdef local
 	local_or_docker =
