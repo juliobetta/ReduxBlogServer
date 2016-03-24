@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.2.3'
+ruby '2.2.1'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.3'
@@ -8,7 +8,21 @@ group :development, :test do
   gem 'sqlite3'
 end
 
-gem 'spring', group: :development
+group :development do
+  gem 'spork-rails'
+  gem 'rails_db_info' # access db info at http://localhost:3000/rails/info/db
+  gem 'better_errors'
+  gem 'guard-bundler'
+  gem 'guard-rails'
+  gem 'guard-rspec'
+  gem 'guard-spork'
+  gem 'quiet_assets'
+  gem 'rails_layout'
+  gem 'rb-fchange', :require=>false
+  gem 'rb-fsevent', :require=>false
+  gem 'rb-inotify', :require=>false
+  gem 'spring-commands-rspec'
+end
 
 group :production do
   gem 'pg'
@@ -17,6 +31,23 @@ group :production do
   gem 'dalli'
 end
 
+group :test do
+  gem 'database_cleaner'
+  gem 'shoulda-matchers', :require=>false
+end
+
+group :development, :test do
+  gem 'factory_girl_rails'
+  gem 'faker'
+  gem 'poltergeist'
+  gem 'pry-rails'
+  gem 'pry-rescue'
+  gem 'rspec-rails'
+  gem 'rubocop'
+  gem 'byebug'
+  gem 'spring'
+  gem 'teaspoon-jasmine'
+end
 
 gem 'devise'
 gem 'jwt'

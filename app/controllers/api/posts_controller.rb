@@ -1,6 +1,6 @@
 class API::PostsController < ApplicationController
-  before_action :set_post, only: [:show, :edit, :destroy, :update]
-  before_action :authenticate_user_from_token!
+  before_action :authenticate_user_from_token!, only: [:create, :update, :destroy]
+  before_action :set_post, only: [:destroy, :update]
 
   def index
     @posts = Post.last(10).reverse
@@ -8,6 +8,7 @@ class API::PostsController < ApplicationController
 
 
   def show
+    @post = Post.find(params[:id])
   end
 
 
@@ -17,7 +18,7 @@ class API::PostsController < ApplicationController
     if @post.save
       render :show, status: :created
     else
-      render json: @post.errors, status: :unprocessable_entity
+      render_errors_for @post
     end
   end
 
@@ -26,7 +27,7 @@ class API::PostsController < ApplicationController
     if @post.update_attributes post_params
       render :show, status: :ok
     else
-      render json: @post.errors, status: :unprocessable_entity
+      render_errors_for @post
     end
   end
 
@@ -41,10 +42,10 @@ class API::PostsController < ApplicationController
   private
 
   def set_post
-    @post = Post.where(id: params[:id], user: current_user)[0]
+    @post = Post.where(id: params[:id], user_id: current_user.id)[0]
   end
 
   def post_params
-    params.permit(:title, :categories, :content, :key).merge(user: current_user
+    params.permit(:title, :categories, :content, :key).merge(user: current_user)
   end
 end

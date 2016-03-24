@@ -33,6 +33,11 @@ class ApplicationController < ActionController::Base
 
 
   def invalid_authentication
-    render json: {error: t('devise.failure.unauthenticated')}, status: :unauthorized
+    render json: {errors: [t('devise.failure.unauthenticated')]}, status: :unauthorized
+  end
+
+
+  def render_errors_for model
+    render json: { errors: model.errors.full_messages }, status: :unprocessable_entity
   end
 end

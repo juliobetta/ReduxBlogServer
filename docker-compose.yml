@@ -1,6 +1,7 @@
 app:
-  container_name: reduxblogserver_web
   build: .
+  container_name: reduxblogserver_web
+  command: make startup
   volumes:
     - .:/app
   ports:
