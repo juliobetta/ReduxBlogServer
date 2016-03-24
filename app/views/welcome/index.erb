@@ -1,8 +1,5 @@
 
-<div class="container">
   <h3>Redux Blog Post API Reference</h3>
-
-  <p>ALL requests require a key parameter, eg `reduxblogserver.herokuapp.com/api/posts?key=123`</p>
 
   <table class="table">
     <thead>
@@ -10,23 +7,130 @@
         <th>Endpoint</th>
         <th>Method</th>
         <th>Example</th>
+        <th>Sample Request</th>
         <th>Sample Response</th>
         <th>Description</th>
       </tr>
     </thead>
 
     <tbody>
+
+      <tr>
+        <td><i>/api/users</i></td>
+        <td>POST</td>
+        <td>http://reduxblog.herokuapp.com/api/users</td>
+        <td>
+<pre>
+{
+  email: 'your@email.com',
+  name: 'Your Name',
+  password: 'strong_password',
+  password_confirmation: 'strong_password'
+}
+</pre>
+        </td>
+        <td>
+<pre>
+{
+  id: 1,
+  name: "Your Name",
+  email: "your@email.com",
+  token: "your_access_token"
+},
+</pre>
+        </td>
+        <td>
+          Create a user. Returns the user information along with authentication <i>token</i>.
+        </td>
+      </tr>
+
+
+      <tr>
+        <td><i>/api/users/:id</i></td>
+        <td>PATCH</td>
+        <td>http://reduxblog.herokuapp.com/api/users/0</td>
+        <td>
+<pre>
+{
+  email: 'your-new@email.com',
+  name: 'Your New Name',
+  password: 'new_strong_password',
+  password_confirmation: 'new_strong_password',
+  current_password: 'strong_password'
+}
+</pre>
+        </td>
+
+
+        <td>
+<pre>
+{
+  id: 1,
+  name: "Your New Name",
+  email: "your-new@email.com",
+  token: "your_new_access_token"
+},
+</pre>
+        </td>
+        <td>
+          <p>
+            Update the current authenticated user, no matter the id passed. Returns the user information along with authentication <i>token</i>.
+          </p>
+          <%= auth_token_alert %>
+        </td>
+      </tr>
+
+      <tr>
+        <td><i>/api/users/:id</i></td>
+        <td>DELETE</td>
+        <td>http://reduxblog.herokuapp.com/api/users/0</td>
+        <td>-</td>
+        <td>-</td>
+        <td>
+          <p>Delete the current authenticated user, no matter the id passed.</p>
+          <%= auth_token_alert %>
+        </td>
+      </tr>
+
+      <tr>
+        <td><i>/api/sessions</i></td>
+        <td>POST</td>
+        <td>http://reduxblog.herokuapp.com/api/sessions</td>
+        <td>
+<pre>
+{
+  email: 'your@email.com',
+  password: 'strong_password'
+}
+</pre>
+        </td>
+        <td>
+<pre>
+{
+  id: 1,
+  name: "Your Name",
+  email: "your@email.com",
+  token: "your_access_token"
+},
+</pre>
+        </td>
+        <td>
+          Authenticate user via email and password. Returns the user information along with the authentication <i>token</i>.
+        </td>
+      </tr>
+
       <tr>
         <td><i>/api/posts</i></td>
         <td>GET</td>
         <td>http://reduxblog.herokuapp.com/api/posts</td>
+        <td>-</td>
         <td>
-          <pre>
-          [
-            { id: 1, title: 'Hi!', categories: 'Computer, Friends' },
-            { id: 2, title: 'New Post', categories: 'Candy' }
-          ]
-          </pre>
+<pre>
+[
+  { id: 1, user_id: 1, title: 'Hi!', categories: 'Computer, Friends' },
+  { id: 2, user_id: 1, title: 'New Post', categories: 'Candy' }
+]
+</pre>
         </td>
         <td>
           Fetches the 40 most recent posts in the database.
@@ -41,68 +145,99 @@
         <td>POST</td>
         <td>http://reduxblog.herokuapp.com/api/posts</td>
         <td>
-          <pre>
-          {
-            id: 1,
-            title: 'Hi!',
-            categories: 'Computer, Friends',
-            content: 'Blog post content'
-          }
-          </pre>
+<pre>
+{
+  title: 'Hi!',
+  categories: 'Computer, Friends',
+  content: 'Blog post content'
+}
+</pre>
         </td>
-        <td>Creates a new blog post entry. Returns the created blog post with the ID</td>
+        <td>
+<pre>
+{
+  id: 1,
+  title: 'Hi!',
+  categories: 'Computer, Friends',
+  content: 'Blog post content'
+}
+</pre>
+        </td>
+        <td>
+          <p>Creates a new blog post entry. Returns the created blog post with the ID.</p>
+          <%= auth_token_alert %>
+        </td>
       </tr>
 
       <tr>
         <td><i>/api/posts/:id</i></td>
         <td>GET</td>
         <td>http://reduxblog.herokuapp.com/api/posts/1</td>
+        <td>-</td>
         <td>
-          <pre>
-          {
-            id: 1,
-            title: 'Hi!',
-            categories: 'Computer, Friends',
-            content: 'Blog post content'
-          }
-          </pre>
+<pre>
+{
+  id: 1,
+  user_id: 1,
+  title: 'Hi!',
+  categories: 'Computer, Friends',
+  content: 'Blog post content'
+}
+</pre>
         </td>
-        <td>Fetches a single blog post with the given ID.  Includes the blog's content.</td>
+        <td>
+          <p>Fetches a single blog post with the given ID.  Includes the blog's content.</p>
+        </td>
       </tr>
 
       <tr>
         <td><i>/api/posts/:id</i></td>
         <td>PATCH</td>
-        <td>http://reduxblog.herokuapp.com/api/posts/2</td>
+        <td>http://reduxblog.herokuapp.com/api/posts/1</td>
         <td>
-          <pre>
-          {
-            id: 2,
-            title: 'New Post!',
-            categories: 'Candy',
-            content: 'Blog post content'
-          }
-          </pre>
+<pre>
+{
+  title: 'New Post!',
+  categories: 'Candy',
+  content: 'Blog post content'
+}
+</pre>
         </td>
-        <td>Updates a single blog post with the given ID.  Includes the blog's content.</td>
+        <td>
+<pre>
+{
+  id: 1,
+  title: 'New Post!',
+  categories: 'Candy',
+  content: 'Blog post content'
+}
+</pre>
+        </td>
+        <td>
+          <p>Updates a single blog post with the given ID.  Includes the blog's content.</p>
+          <%= auth_token_alert %>
+        </td>
       </tr>
 
       <tr>
         <td><i>/api/posts/:id</i></td>
         <td>DELETE</td>
-        <td>http://reduxblog.herokuapp.com/api/posts/2</td>
+        <td>http://reduxblog.herokuapp.com/api/posts/1</td>
+        <td>-</td>
         <td>
-          <pre>
-            {
-              id: 2,
-              title: 'New Post!',
-              categories: 'Candy',
-              content: 'Blog post content'
-            }
-          </pre>
+<pre>
+{
+  id: 1,
+  title: 'New Post!',
+  categories: 'Candy',
+  content: 'Blog post content'
+}
+</pre>
         </td>
-        <td>Deletes a single blog post with the given ID. Returns the post</td>
+        <td>
+          <p>Deletes a single blog post with the given ID. Returns the post</p>
+          <%= auth_token_alert %>
+        </td>
       </tr>
     </tbody>
   </table>
-</div>
