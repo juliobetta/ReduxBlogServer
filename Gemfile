@@ -50,7 +50,7 @@ group :development, :test do
 end
 
 gem 'devise'
-gem 'jwt'
+gem 'jwt', '~> 1.5.0'
 gem 'sass-rails', '~> 5.0.3'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.0.0'
