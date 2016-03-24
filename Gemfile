@@ -46,7 +46,6 @@ group :development, :test do
   gem 'rubocop'
   gem 'byebug'
   gem 'spring'
-  gem 'teaspoon-jasmine'
 end
 
 gem 'devise'
