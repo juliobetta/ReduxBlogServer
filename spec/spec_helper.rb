@@ -3,6 +3,7 @@ require 'rubygems'
 require 'spork'
 require 'database_cleaner'
 
+
 #uncomment the following line to use spork with the debugger
 #require 'spork/ext/ruby-debug'
 

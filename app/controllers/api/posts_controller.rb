@@ -2,6 +2,7 @@ class API::PostsController < ApplicationController
   before_action :authenticate_user_from_token!, only: [:create, :update, :destroy]
   before_action :set_post, only: [:destroy, :update]
 
+
   def index
     @posts = Post.last(10).reverse
   end
@@ -42,7 +43,7 @@ class API::PostsController < ApplicationController
   private
 
   def set_post
-    @post = Post.where(id: params[:id], user_id: current_user.id)[0]
+    @post = Post.find_by! id: params[:id], user_id: current_user.id
   end
 
   def post_params

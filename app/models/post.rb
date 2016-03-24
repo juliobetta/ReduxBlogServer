@@ -3,7 +3,12 @@ require 'obscenity/active_model'
 class Post < ActiveRecord::Base
   belongs_to :user
 
-  validates :title,  obscenity: { sanitize: true, replacement: "kitten" }
-  validates :categories,  obscenity: { sanitize: true, replacement: "kitten" }
-  validates :content,  obscenity: { sanitize: true, replacement: "kitten" }
+  OBSCENITY_OPTS = { obscenity: { sanitize: true, replacement: "$!@*&" } }
+
+  validates :title,      OBSCENITY_OPTS
+  validates :categories, OBSCENITY_OPTS
+  validates :content,    OBSCENITY_OPTS
+
+  validates_presence_of :title, :content
+
 end

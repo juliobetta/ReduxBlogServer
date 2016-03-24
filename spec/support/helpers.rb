@@ -16,9 +16,9 @@ RSpec.configure do |config|
     end
   end
 
+
   def create_user(role = :user)
     user = FactoryGirl.create(:user)
-    user.add_role role unless role == :user
     user
   end
 end

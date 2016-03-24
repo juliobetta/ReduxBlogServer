@@ -32,6 +32,7 @@ group :production do
 end
 
 group :test do
+  gem 'capybara'
   gem 'database_cleaner'
   gem 'shoulda-matchers', :require=>false
 end

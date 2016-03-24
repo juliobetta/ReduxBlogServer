@@ -298,6 +298,7 @@ PLATFORMS
 DEPENDENCIES
   better_errors
   byebug
+  capybara
   coffee-rails (~> 4.0.0)
   dalli
   database_cleaner

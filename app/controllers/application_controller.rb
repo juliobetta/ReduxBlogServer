@@ -7,6 +7,13 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session, if: Proc.new { |c| c.request.format == 'application/json' }
 
 
+  rescue_from ActiveRecord::RecordNotFound do |exception|
+    respond_to do |format|
+      format.json { render json: { errors: [t('not_found')] }, status: :not_found }
+    end
+  end
+
+
   protected
 
   def authenticate_user_from_token!

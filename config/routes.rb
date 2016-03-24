@@ -8,8 +8,7 @@ Rails.application.routes.draw do
     resources :users, only: [:create, :update, :destroy], defaults: { format: :json }
 
     devise_scope :user do
-      match '/sessions' => 'sessions#create',  via: :post, defaults: { format: :json }
-      match '/sessions' => 'sessions#destroy', via: :delete, defaults: { format: :json }
+      post '/sessions' => 'sessions#create', defaults: { format: :json }
     end
 
 
