@@ -1,15 +1,14 @@
 class API::PostsController < ApplicationController
-  before_action :authenticate_user_from_token!, only: [:create, :update, :destroy]
-  before_action :set_post, only: [:destroy, :update]
+  before_action :authenticate_user_from_token!
+  before_action :set_post, only: [:show, :destroy, :update]
 
 
   def index
-    @posts = Post.last(10).reverse
+    @posts = Post.where(user: current_user).last(10).reverse
   end
 
 
   def show
-    @post = Post.find(params[:id])
   end
 
 

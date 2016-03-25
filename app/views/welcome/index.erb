@@ -133,9 +133,12 @@
 </pre>
         </td>
         <td>
-          Fetches the 40 most recent posts in the database.
-          This endpoint <em>does not</em> return the posts content, only the title, id, and categories.
-          Note this list is occasionally cleaned out.
+          <p>
+            Fetches posts in the database.
+            This endpoint <em>does not</em> return the posts content, only the title, id, user_id and categories.
+            Note this list is occasionally cleaned out.
+          </p>
+          <%= auth_token_alert %>
         </td>
       </tr>
 
@@ -187,6 +190,7 @@
         </td>
         <td>
           <p>Fetches a single blog post with the given ID.  Includes the blog's content.</p>
+          <%= auth_token_alert %>
         </td>
       </tr>
 

@@ -4,8 +4,49 @@ RSpec.describe API::PostsController do
   render_views
 
   let(:user)   { create_user }
-  let(:object) { FactoryGirl.create(:post, user: user) }
-  let(:object_attributes) { %w(id user_id content title categories) }
+  let!(:object) { FactoryGirl.create(:post, user: user) }
+  let(:another_user) { create_user}
+  let(:another_post) { FactoryGirl.create(:post, user: another_user) }
+  let(:show_object_attrs) { %w(id user_id content title categories) }
+  let(:list_object_attrs) { %w(id user_id title categories) }
+
+
+  describe 'GET #posts' do
+    context 'with success' do
+      it 'lists posts' do
+        authorize user
+
+        get :index, format: :json
+
+        expect(response.status).to be 200
+        expect(json).to include object.slice(*list_object_attrs)
+                                      .stringify_keys
+      end
+
+      it 'lists only current user\'s posts' do
+        authorize user
+
+        get :index, format: :json
+
+        expect(response.status).to be 200
+        expect(json).to_not include another_post.slice(*list_object_attrs)
+                                                .stringify_keys
+      end
+    end
+
+    context 'with failure' do
+      context 'when auth token is not passed' do
+        it 'shows authentication error' do
+          get :index,format: :json
+          expect_authentication_error
+        end
+      end
+    end
+  end
+
+
+  ##############################################################################
+  ##############################################################################
 
 
   describe 'POST #post' do
@@ -41,17 +82,27 @@ RSpec.describe API::PostsController do
   describe 'GET #post' do
     context 'with success' do
       it 'shows a post' do
+        authorize user
         get :show, id: object.id, format: :json
 
         expect(response.status).to be 200
-        expect(json).to eq object.attributes.slice(*object_attributes)
+        expect(json).to eq object.attributes.slice(*show_object_attrs)
       end
     end
 
     context 'with failure' do
       context 'when post does not exist' do
         it 'shows 404' do
+          authorize user
           get :show, id: 0, format: :json
+          expect_not_found
+        end
+      end
+
+      context 'when access another user\'s post' do
+        it 'shows 404' do
+          authorize user
+          get :show, id: another_post, format: :json
           expect_not_found
         end
       end
@@ -118,7 +169,7 @@ RSpec.describe API::PostsController do
         delete :destroy, id: object.id, format: :json
 
         expect(response.status).to be 200
-        expect(json).to eq object.attributes.slice(*object_attributes)
+        expect(json).to eq object.attributes.slice(*show_object_attrs)
       end
     end
 
