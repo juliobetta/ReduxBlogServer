@@ -30,6 +30,52 @@ RSpec.describe API::UsersController do
   ##############################################################################
 
 
+  describe 'GET #user' do
+    context 'with success' do
+      let(:user_information) {
+        {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          token: jwt_token(user)
+        }.stringify_keys
+      }
+
+      it 'gets current user information' do
+        authorize user
+        get :show, id: user, format: :json
+
+        expect(response.status).to be 200
+        expect(json).to eq user_information
+      end
+
+
+      it 'shows always the current user\'s information' do
+        another_user = create_user
+
+        authorize user
+        get :show, id: another_user, format: :json
+
+        expect(response.status).to be 200
+        expect(json).to eq user_information
+      end
+    end
+
+    context 'with failure' do
+      context 'when auth token is not passed' do
+        it 'shows authentication error' do
+          get :show, id: user
+
+          expect_authentication_error
+        end
+      end
+    end
+  end
+
+  ##############################################################################
+  ##############################################################################
+
+
   describe 'DELETE #user' do
     context 'with success' do
       it 'deletes a user' do

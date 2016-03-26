@@ -1,5 +1,5 @@
 class API::UsersController < ApplicationController
-  before_action :authenticate_user_from_token!, only: [:destroy, :update]
+  before_action :authenticate_user_from_token!, only: [:show, :destroy, :update]
 
   def create
     @user  = User.new user_params
@@ -12,6 +12,13 @@ class API::UsersController < ApplicationController
       render_errors_for @user
     end
 
+  end
+
+
+  def show
+    @user  = current_user
+    @token = jwt_token(@user)
+    render :show, status: :ok
   end
 
 

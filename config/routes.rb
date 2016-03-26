@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   namespace :api do
 
     resources :posts, defaults: { format: :json }
-    resources :users, only: [:create, :update, :destroy], defaults: { format: :json }
+    resources :users, only: [:show, :create, :update, :destroy], defaults: { format: :json }
 
     devise_scope :user do
       post '/sessions' => 'sessions#create', defaults: { format: :json }
