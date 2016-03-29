@@ -7,8 +7,12 @@ RSpec.describe API::PostsController do
   let!(:object) { FactoryGirl.create(:post, user: user) }
   let(:another_user) { create_user}
   let(:another_post) { FactoryGirl.create(:post, user: another_user) }
-  let(:show_object_attrs) { %w(id user_id content title categories) }
-  let(:list_object_attrs) { %w(id user_id title categories) }
+  let(:show_object_attrs) {
+    %w(id user_id content title categories created_at updated_at)
+  }
+  let(:list_object_attrs) {
+    %w(id user_id title categories created_at updated_at)
+  }
 
 
   describe 'GET #posts' do
@@ -20,6 +24,8 @@ RSpec.describe API::PostsController do
 
         expect(response.status).to be 200
         expect(json).to include object.slice(*list_object_attrs)
+                                      .merge(created_at: object.created_at.to_i,
+                                             updated_at: object.updated_at.to_i)
                                       .stringify_keys
       end
 
@@ -28,9 +34,13 @@ RSpec.describe API::PostsController do
 
         get :index, format: :json
 
+        attrs = another_post.slice(*list_object_attrs)
+                            .merge(created_at: another_post.created_at.to_i,
+                                   updated_at: another_post.updated_at.to_i)
+                            .stringify_keys
+
         expect(response.status).to be 200
-        expect(json).to_not include another_post.slice(*list_object_attrs)
-                                                .stringify_keys
+        expect(json).to_not include attrs
       end
     end
 
@@ -57,8 +67,13 @@ RSpec.describe API::PostsController do
         attrs = FactoryGirl.attributes_for(:post, user_id: user.id)
         post :create, attrs.merge(format: :json)
 
+        last = Post.last
+
         expect(response.status).to be 201
-        expect(json).to eq attrs.merge(id: Post.last.id).stringify_keys
+        expect(json).to eq attrs.merge(id:         last.id,
+                                       created_at: last.created_at.to_i,
+                                       updated_at: last.updated_at.to_i)
+                                .stringify_keys
       end
     end
 
@@ -85,8 +100,12 @@ RSpec.describe API::PostsController do
         authorize user
         get :show, id: object.id, format: :json
 
+        attrs = object.attributes
+                      .merge({created_at: object.created_at.to_i,
+                             updated_at: object.updated_at.to_i}.stringify_keys)
+
         expect(response.status).to be 200
-        expect(json).to eq object.attributes.slice(*show_object_attrs)
+        expect(json).to eq attrs.slice(*show_object_attrs)
       end
     end
 
@@ -132,7 +151,9 @@ RSpec.describe API::PostsController do
         patch :update, new_attrs
 
         expect(response.status).to be 200
-        expect(json).to eq new_attrs.merge(user_id: user.id)
+        expect(json).to eq new_attrs.merge(user_id: user.id,
+                                           created_at: object.created_at.to_i,
+                                           updated_at: object.updated_at.to_i)
                                     .except(:format)
                                     .stringify_keys
       end
@@ -168,8 +189,15 @@ RSpec.describe API::PostsController do
         authorize user
         delete :destroy, id: object.id, format: :json
 
+        attrs = object.attributes.merge(
+          {
+            created_at: object.created_at.to_i,
+            updated_at: json['updated_at']
+          }.stringify_keys
+        )
+
         expect(response.status).to be 200
-        expect(json).to eq object.attributes.slice(*show_object_attrs)
+        expect(json).to eq attrs.slice(*show_object_attrs)
       end
     end
 
