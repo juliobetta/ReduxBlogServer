@@ -31,13 +31,20 @@ class API::SyncController < ApplicationController
 
   def sync(field, subject)
     objects = []
+    return objects unless sync_params[field.to_s].present?
+
     belongs_to_user = subject.column_names.include? 'user_id'
 
     sync_params[field.to_s].each do |attrs|
       attrs['user_id'] = current_user.id if belongs_to_user
 
       if attrs['remote_id'].present?
-        object = subject.find_by! attrs['remote_id']
+        object = subject.find_by id: attrs['remote_id']
+
+        if object.nil?
+          objects << attrs.merge({ 'delete_at' => Time.now.to_i })
+          next
+        end
 
         if attrs['deleted_at'].present?
           object.destroy!
@@ -46,10 +53,10 @@ class API::SyncController < ApplicationController
         end
       else
         object = subject.create! send("valid_#{field}_attrs_from", attrs)
-        attrs['remote_id'] = object.id
       end
 
-      objects << object.attributes.merge(attrs) if object.persisted?
+      attrs['remote_id'] = object.id
+      objects << object.attributes.merge(attrs)
     end
 
     objects

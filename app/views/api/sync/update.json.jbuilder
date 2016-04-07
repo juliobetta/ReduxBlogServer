@@ -1,6 +1,7 @@
 json.posts do
   json.array!(@posts) do |post|
     json.set! :id,         post['id']
+    json.set! :deleted_at, post['deleted_at'] || nil
     json.set! :remote_id,  post['remote_id']
     json.set! :title,      post['title']
     json.set! :categories, post['categories']
