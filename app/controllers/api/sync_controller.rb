@@ -42,7 +42,7 @@ class API::SyncController < ApplicationController
         object = subject.find_by id: attrs['remote_id']
 
         if object.nil?
-          objects << attrs.merge({ 'delete_at' => Time.now.to_i })
+          objects << attrs.merge({ 'deleted_at' => Time.now.to_i })
           next
         end
 
