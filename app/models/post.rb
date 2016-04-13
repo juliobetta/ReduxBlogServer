@@ -11,4 +11,10 @@ class Post < ActiveRecord::Base
 
   validates_presence_of :title, :content
 
+
+  def self.updated_starting_from(timestamp)
+    return Post.all if timestamp.nil?
+
+    Post.where('updated_at > ?', Time.at(timestamp.to_i))
+  end
 end

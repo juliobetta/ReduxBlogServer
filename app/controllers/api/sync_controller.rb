@@ -2,8 +2,8 @@ class API::SyncController < ApplicationController
   before_action :authenticate_user_from_token!
 
   def index
-    # TODO get all posts with updated_at > params[:updated_at]
-    @posts = Post.all
+    @posts = Post.updated_starting_from(params[:updated_at] || nil)
+                 .where(user: current_user)
   end
 
 
