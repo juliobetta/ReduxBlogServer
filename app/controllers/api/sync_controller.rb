@@ -2,8 +2,9 @@ class API::SyncController < ApplicationController
   before_action :authenticate_user_from_token!
 
   def index
-    @posts = Post.updated_starting_from(params[:updated_at] || nil)
-                 .where(user: current_user)
+    @posts = Post.updated_starting_from(
+               timestamp_from_javascript(params[:updated_at])
+             ).where(user: current_user)
   end
 
 

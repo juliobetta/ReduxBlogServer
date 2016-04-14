@@ -17,6 +17,12 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def timestamp_from_javascript timestamp
+    return 0 unless timestamp
+    timestamp.to_i / 1000
+  end
+
+
   def authenticate_user_from_token!
     if claims and user = User.find_by(email: claims[0]['user'])
       @current_user = user
