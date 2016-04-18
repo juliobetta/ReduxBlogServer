@@ -1,10 +1,6 @@
 class Sync
   include Synchronizable::Base
 
-  has_fields :posts
-
-
-  def run
-    process_fields @params
-  end
+  has_many :posts
+  # has_one :user
 end

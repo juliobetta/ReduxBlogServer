@@ -1,6 +1,11 @@
 module Synchronizable
+  @attrs = {
+    remote_id_key:  :remote_id,
+    local_id_key:   :id,
+    deleted_at_key: :deleted_at,
+    last_sync_key:  :last_sync
+  }
 
-  BASE_ATTRS = [:remote_id, :id, :deleted_at]
 
   class Output
     attr_accessor :data
@@ -16,9 +21,10 @@ module Synchronizable
 
     [:errors, :diffs, :data].each do |key|
       define_method("set_#{key}") do |object, attrs|
-        attrs[:remote_id] = object.id
-        @data[key][field] = [] unless @data[key][field].present?
-        @data[key][field] << attrs
+        table_name = object.class.to_s.tableize.to_sym
+        attrs[:remote_id] = object.id rescue nil
+        @data[key][table_name] = [] unless @data[key][table_name].present?
+        @data[key][table_name] << object.attributes.symbolize_keys.merge(attrs)
       end
     end
   end
@@ -46,31 +52,37 @@ module Synchronizable
 
 
     included do
-      def self.has_fields(fields)
-        @fields = fields
+    end
+
+
+    module ClassMethods
+      attr_accessor :models
+
+      def has_many(*args)
+        self.models = args
       end
     end
 
 
-    def belongs_to_user? model
-      model.column_names.includes? 'user_id'
-    end
+    def execute
+      ActiveRecord::Base.transaction do
+        self.class.models.each do |table_name|
+          model = get_model_from table_name
+          belongs_to_user = belongs_to_user? model
 
-
-    def process_fields params
-      Sync.fields.each do |field|
-        model = field.to_s.classify.constantize
-        belongs_to_user = belongs_to_user? model
-
-        field.each do |attrs|
-          attrs[:user_id] = @current_user.id if belongs_to_user
-          process model, attrs.symbolize_keys!
+          @params[table_name].each do |attrs|
+            attrs[:user_id] = @current_user.id if belongs_to_user
+            process model, attrs.symbolize_keys!
+          end
         end
       end
 
-      @output.data
+      @output
     end
 
+
+
+    private
 
     def process(model, attrs)
       unless attrs[:remote_id].present?
@@ -87,19 +99,44 @@ module Synchronizable
         return destroy object, attrs
       end
 
-      updated_at = Helpers.timestamp_from_javascript(params[:updated_at])
+      updated_at = Helpers.timestamp_from_javascript(attrs[:updated_at])
 
       if updated_at >= object.updated_at.to_i
-        return update object, attrs
+        return update object, attrs.except(:remote_id, :id, :updated_at)
       else
         return @output.set_diffs object, attrs
       end
     end
 
 
+    def get_model_from table_name
+      table_name.to_s.classify.constantize
+    end
+
+
+    def belongs_to_user? model
+      model.column_names.include? 'user_id'
+    end
+
+
+    def all
+      updated_at = Helpers.timestamp_from_javascript(@params[:last_sync])
+      results = {}
+
+      self.class.models.each do |table_name|
+        model = get_model_from table_name
+
+        results[table_name] = {} unless results[table_name].present?
+        results[table_name] << model.where('updated_at >= ?', updated_at)
+      end
+
+      results
+    end
+
+
     def create(model, attrs)
       if object = model.create(attrs)
-        @output.set_data object, attrs
+        @output.set_data object, attrs.except(:remote_id, :id)
       else
         @output.set_errors object, object.errors.full_messages
       end
