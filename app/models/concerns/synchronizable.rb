@@ -30,16 +30,6 @@ module Synchronizable
   end
 
 
-  module Helpers
-    extend self
-
-    def timestamp_from_javascript timestamp
-      return 0 unless timestamp
-      timestamp.to_i / 1000
-    end
-  end
-
-
   module Base
     extend ActiveSupport::Concern
 
@@ -58,7 +48,7 @@ module Synchronizable
     module ClassMethods
       attr_accessor :models
 
-      def has_many(*args)
+      def with_many(*args)
         self.models = args
       end
     end
@@ -99,9 +89,7 @@ module Synchronizable
         return destroy object, attrs
       end
 
-      updated_at = Helpers.timestamp_from_javascript(attrs[:updated_at])
-
-      if updated_at >= object.updated_at.to_i
+      if updated_at.to_datetime >= object.updated_at
         return update object, attrs.except(:remote_id, :id, :updated_at)
       else
         return @output.set_diffs object, attrs
@@ -120,7 +108,7 @@ module Synchronizable
 
 
     def all
-      updated_at = Helpers.timestamp_from_javascript(@params[:last_sync])
+      updated_at = @params[:last_sync].to_datetime
       results = {}
 
       self.class.models.each do |table_name|

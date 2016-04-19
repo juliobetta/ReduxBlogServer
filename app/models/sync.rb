@@ -1,6 +1,6 @@
 class Sync
   include Synchronizable::Base
 
-  has_many :posts
-  # has_one :user
+  with_many :posts
+  # with_one :user
 end
